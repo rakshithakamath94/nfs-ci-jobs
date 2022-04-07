@@ -1,0 +1,75 @@
+- job:
+    name: nfs-ganesha_trigger-fsal_cephfs
+    node: cico-workspace
+    project-type: freestyle
+    concurrent: false
+    allow-manual-triggers: true 
+
+    properties:
+    - build-discarder:
+        days-to-keep: 14
+    - github:
+        url: https://github.com/nfs-ganesha/nfs-ganesha/
+    - rebuild:
+        rebuild-disabled: true
+
+    scm:
+      - git:
+          branches:
+            - 'refs/heads/main'
+          browser: auto
+          skip-tag: true
+          shallow-clone: true
+          url: https://github.com/rakshithakamath94/nfs-ci-jobs.git
+
+    parameters:
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/build-fsal_cephfs/build-fsal_cephfs.sh 
+        description: Test script to execute on the reserved machine, should move to the some NFS-Ganesha upstream testing repo at one point.
+        name: TEST_SCRIPT
+    - choice:
+        choices:
+        - review.gerrithub.io
+        description: Gerrit instance hosting the git repository.
+        name: GERRIT_HOST
+    - choice:
+        choices:
+        - ffilz/nfs-ganesha
+        description: Gerrit project of the git repository. 
+        name: GERRIT_PROJECT
+    - string:
+        default: refs/changes/77/294677/3 
+        description: Patch set from the upstream git repository to build from. 
+        name: GERRIT_REFSPEC
+    - choice:
+        choices:
+        - "7"
+        - "6"
+        description: CentOS version to build the RPMs for.
+        name: CENTOS_VERSION
+    - choice:
+        choices:
+        - x86_64
+        - i386
+        description: CentOS architecture to build the RPMs for.
+        name: CENTOS_ARCH
+
+    builders:
+    - shell: !include-raw: ../scripts/fsal_cephfs/fsal_cephfs.sh
+
+    triggers:
+      - gerrit:
+          server-name: nfs-ganesha-gerrithub 
+          silent: true
+          trigger-on:
+            - patchset-created-event:
+                exclude-drafts: true
+                exclude-no-code-change: true
+            - comment-added-contains-event: 
+                comment-contains-value: 'recheck cephfs'
+          projects:
+            - project-compare-type: PLAIN
+              project-pattern: 'ffilz/nfs-ganesha'
+              branches:
+                - branch-pattern: '**' 
+                  branch-compare-type: ANT
