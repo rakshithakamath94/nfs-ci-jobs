@@ -1,5 +1,15 @@
-- job:
-    name: nfs-ganesha_trigger-fsal_cephfs
+- project:
+    name: 'nfs-ganesha_trigger-fsal'
+    product:
+      - cephfs
+      - gluster
+      - rgw
+
+    jobs:
+      - '{name}_{product}'
+
+- job-template:
+    name: '{name}_{product}'
     node: cico-workspace
     project-type: freestyle
     concurrent: false
@@ -21,10 +31,11 @@
           skip-tag: true
           shallow-clone: true
           url: https://github.com/rakshithakamath94/nfs-ci-jobs.git
+          basedir: "$WORKSPACE/nfs-ci-jobs"
 
     parameters:
     - string:
-        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/build-fsal_cephfs/build-fsal_cephfs.sh 
+        default: 'https://raw.githubusercontent.com/rakshithakamath94/nfs-ci-jobs/main/scripts/build-fsal_{product}.sh'
         description: Test script to execute on the reserved machine, should move to the some NFS-Ganesha upstream testing repo at one point.
         name: TEST_SCRIPT
     - choice:
@@ -55,7 +66,7 @@
         name: CENTOS_ARCH
 
     builders:
-    - shell: !include-raw: ../scripts/fsal_cephfs/fsal_cephfs.sh
+    - shell: !include-raw-escape: ../scripts/common/build.sh
 
     triggers:
       - gerrit:
@@ -66,7 +77,7 @@
                 exclude-drafts: true
                 exclude-no-code-change: true
             - comment-added-contains-event: 
-                comment-contains-value: 'recheck cephfs'
+                comment-contains-value: 'recheck {product}' 
           projects:
             - project-compare-type: PLAIN
               project-pattern: 'ffilz/nfs-ganesha'

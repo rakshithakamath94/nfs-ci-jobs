@@ -11,7 +11,7 @@
 # Please note, this is a basic script, there is no error handling and there are
 # no real tests for any exceptions. Patches welcome!
 
-import json, urllib.request, subprocess, sys, time, os
+import json, urllib, subprocess, sys, time, os
 
 url_base="http://admin.ci.centos.org:8080"
 # we just build on CentOS-7/x86_64, CentOS-6 does not have 'mock'?
@@ -22,10 +22,12 @@ script_url=os.getenv("TEST_SCRIPT")
 # delay for 5 minutes (duffy timeout for rate limiting)
 retry_delay=300
 # retry maximum 3 hours, that is 3 x 60 x 60 seconds
-max_retries=int(((3 * 60 * 60) / retry_delay))
+max_retries=((3 * 60 * 60) / retry_delay)
 
 # read the API key for Duffy from the ~/duffy.key file
-api=os.environ['CICO_API_KEY']
+fo=open("/home/nfs-ganesha/duffy.key")
+api=fo.read().strip()
+fo.close()
 
 # build the URL to request the system(s)
 get_nodes_url="%s/Node/get?key=%s&ver=%s&arch=%s&count=%s" % (url_base,api,ver,arch,count)
@@ -34,14 +36,14 @@ get_nodes_url="%s/Node/get?key=%s&ver=%s&arch=%s&count=%s" % (url_base,api,ver,a
 retries=0
 while retries < max_retries:
     try:
-        dat=urllib.request.urlopen(get_nodes_url).read()
+        dat=urllib.urlopen(get_nodes_url).read()
         b=json.loads(dat)
         host=b['hosts'][0]
         # all is fine, break out of the loop
         break
-    except ValueError as ve:
+    except ValueError, ve:
         print("Failed to parse Duffy response: %s" % (dat))
-    except Exception as e:
+    except Exception, e:
         print("An unexpected error occured: %s" % (e))
 
     retries+=1
@@ -61,6 +63,6 @@ rtn_code=subprocess.call(cmd, shell=True)
 
 # return the system(s) to duffy
 done_nodes_url="%s/Node/done?key=%s&ssid=%s" % (url_base, api, b['ssid'])
-das=urllib.request.urlopen(done_nodes_url).read()
+das=urllib.urlopen(done_nodes_url).read()
 
 sys.exit(rtn_code)
