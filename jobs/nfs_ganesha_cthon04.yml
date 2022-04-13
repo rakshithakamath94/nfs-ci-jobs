@@ -1,0 +1,68 @@
+- job:
+    name: nfs_ganesha_cthon04 
+    node: cico-workspace
+    description: 'Run cthon04 tests against the latest build of Ganesha with FSAL_GLUSTER.'
+    project-type: freestyle
+    concurrent: true
+    allow-manual-triggers: true
+    logrotate:
+      daysToKeep: 14
+
+    properties:
+    - github:
+        url: http://git.linux-nfs.org/?p=steved/cthon04.git;a=summary/ 
+
+    parameters:
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster-duffy.py
+        description: 'Python script that reserves a machine from Duffy and starts the TEST_SCRIPT'
+        name: DUFFY_SCRIPT
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster.sh 
+        description: Test script to execute on the reserved machine acting as a server.
+        name: SERVER_TEST_SCRIPT
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/cthon04/client.sh
+        description: Test script to execute on the reserved machine acting as a client.
+        name: CLIENT_TEST_SCRIPT
+    - string:
+        default: ''
+        description: URL to the .repo file to use for installing NFS-Ganesha
+        name: YUM_REPO
+    - string:
+        default: 'review.gerrithub.io'
+        description: 'Hostname of the Gerrit server.'
+        name: GERRIT_HOST
+    - string:
+        default: ffilz/nfs-ganesha
+        description: Project name from Gerrit (like "ffilz/nfs-ganesha").
+        name: GERRIT_PROJECT
+    - string:
+        default: refs/heads/next
+        description: Git reference to fetch from the Gerrit project.
+        name: GERRIT_REFSPEC
+    - string:
+        default: cthon04 
+        description: 'Name of the NFS-export to create.'
+        name: EXPORT
+    - choice:
+        choices:
+        - "7"
+        - "6"
+        description: 'CentOS version to run the tests on (server + client)'
+        name: CENTOS_VERSION
+    - choice:
+        choices:
+        - x86_64
+        - i386
+        description: 'CentOS architecture to run the tests on (server + client)'
+        name: CENTOS_ARCH
+
+    builders:
+    - shell: |
+        curl -o jenkins-job.py ${DUFFY_SCRIPT}
+        python jenkins-job.py
+
+    wrappers:
+      - workspace-cleanup:
+          include: ''
