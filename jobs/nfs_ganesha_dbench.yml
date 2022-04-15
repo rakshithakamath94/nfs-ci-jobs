@@ -1,0 +1,80 @@
+- job:
+    name: nfs_ganesha_dbench 
+    node: cico-workspace
+    description: 'Run dbench test suite against the latest build of Ganesha with FSAL_GLUSTER.'
+    project-type: freestyle
+    concurrent: true
+    allow-manual-triggers: true
+    disabled: true
+    logrotate:
+      daysToKeep: 14
+
+    parameters:
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster-duffy.py
+        description: 'Python script that reserves a machine from Duffy and starts the TEST_SCRIPT'
+        name: DUFFY_SCRIPT
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster.sh
+        description: Test script to execute on the reserved machine acting as a server.
+        name: SERVER_TEST_SCRIPT
+    - string:
+        default: https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/cthon04/client.sh
+        description: Test script to execute on the reserved machine acting as a client.
+        name: CLIENT_TEST_SCRIPT
+    - string:
+        default: ''
+        description: URL to the .repo file to use for installing NFS-Ganesha
+        name: YUM_REPO
+    - string:
+        default: 'review.gerrithub.io'
+        description: 'Hostname of the Gerrit server.'
+        name: GERRIT_HOST
+    - string:
+        default: ffilz/nfs-ganesha
+        description: Project name from Gerrit (like "ffilz/nfs-ganesha").
+        name: GERRIT_PROJECT
+    - string:
+        default: refs/heads/next
+        description: Git reference to fetch from the Gerrit project.
+        name: GERRIT_REFSPEC
+    - string:
+        default: dbench 
+        description: 'Name of the NFS-export to create.'
+        name: EXPORT
+    - choice:
+        choices:
+        - "7"
+        - "6"
+        description: 'CentOS version to run the tests on (server + client)'
+        name: CENTOS_VERSION
+    - choice:
+        choices:
+        - x86_64
+        - i386
+        description: 'CentOS architecture to run the tests on (server + client)'
+        name: CENTOS_ARCH
+
+    triggers:
+      - gerrit:
+          server-name: nfs-ganesha-gerrithub
+          silent: true
+          trigger-on:
+            - patchset-created-event:
+                exclude-drafts: true
+                exclude-no-code-change: true
+            - comment-added-contains-event:
+                comment-contains-value: 'recheck dbench'
+          projects:
+            - project-compare-type: PLAIN
+              project-pattern: 'ffilz/nfs-ganesha'
+              branches:
+                - branch-pattern: '**'
+                  branch-compare-type: ANT
+
+    builders:
+    - shell: !include-raw-escape: ../scripts/ganesha_dbench.sh
+
+    wrappers:
+      - workspace-cleanup:
+          include: ''
