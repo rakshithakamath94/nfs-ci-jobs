@@ -4,6 +4,7 @@
     project-type: freestyle
     concurrent: true
     allow-manual-triggers: true
+    disabled: true
     logrotate:
       daysToKeep: 14
 
@@ -43,7 +44,7 @@
         description: CentOS architecture to build the RPMs for.
         name: CENTOS_ARCH
 
-    builders
+    builders:
     - shell: !include-raw: ../scripts/common/build.sh
 
     triggers:

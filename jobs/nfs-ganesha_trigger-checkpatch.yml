@@ -5,6 +5,7 @@
     project-type: freestyle
     concurrent: false 
     allow-manual-triggers: false
+    disabled: true
 
     properties:
     - build-discarder:

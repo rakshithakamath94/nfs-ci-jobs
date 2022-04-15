@@ -1,6 +1,6 @@
 - project:
     name: 'nfs_ganesha'
-    product:
+    flavours:
       - iozone:
           recheck_val: 'iozone$'
       - iozone_vfs:
@@ -9,14 +9,15 @@
           recheck_val: 'iozone_vfs_minmdcache$'
 
     jobs:
-      - '{name}_{product}'
+      - '{name}_{flavours}'
 
 - job-template:
-    name: '{name}_{product}'
+    name: '{name}_{flavours}'
     node: cico-workspace
     project-type: freestyle
     concurrent: true 
     allow-manual-triggers: true 
+    disabled: true
     logrotate:
       daysToKeep: 14
 
