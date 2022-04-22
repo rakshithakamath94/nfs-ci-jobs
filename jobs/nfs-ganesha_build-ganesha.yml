@@ -1,5 +1,5 @@
 - job:
-    name: nfs_ganesha_dbench 
+    name: nfs-ganesha_build-ganesha 
     node: cico-workspace
     description: 'Run dbench test suite against the latest build of Ganesha with FSAL_GLUSTER.'
     project-type: freestyle
@@ -14,7 +14,9 @@
     - script_variables:
         script_url: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster-duffy.py'
     - nfs_variables:
-        export_var: 'ganeshaExport'
+        export_var: 'dbench'
+    - gerrit_variables
+    - centos_variables
 
     triggers:
     - gerrithub-trigger:

@@ -8,10 +8,8 @@
     disabled: true
 
     properties:
-    - build-discarder:
-        days-to-keep: 14
-    - github:
-        url: https://github.com/nfs-ganesha/nfs-ganesha/ 
+    - discarder
+    - nfs-github
 
     parameters:
     - string:
@@ -51,5 +49,4 @@
                   branch-compare-type: ANT
 
     wrappers:
-      - ssh-agent-credentials:
-          users: ''
+    - ssh-agent

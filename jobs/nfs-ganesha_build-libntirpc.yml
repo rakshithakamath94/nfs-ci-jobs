@@ -6,54 +6,20 @@
     concurrent: true
     allow-manual-triggers: false 
     disabled: true
-    logrotate:
-      daysToKeep: 14
 
     properties:
-    - github:
-        url: https://github.com/nfs-ganesha/ntirpc/ 
+    - discarder
+    - nfs-github
 
     parameters:
-    - choice:
-        choices:
-        - review.gerrithub.io
-        description: Gerrit instance hosting the git repository.
-        name: GERRIT_HOST
-    - choice:
-        choices:
-        - ffilz/nfs-ganesha
-        description: Gerrit project of the git repository.
-        name: GERRIT_PROJECT
-    - string:
-        default: refs/changes/77/294677/3
-        description: Patch set from the upstream git repository to build from.
-        name: GERRIT_REFSPEC
-    - choice:
-        choices:
-        - "7"
-        - "6"
-        description: CentOS version to build the RPMs for.
-        name: CENTOS_VERSION
-    - choice:
-        choices:
-        - x86_64
-        - i386
-        description: CentOS architecture to build the RPMs for.
-        name: CENTOS_ARCH
+    - gerrit_variables
+    - centos_variables
 
     scm:
-      - git:
-          branches:
-            - 'refs/heads/main'
-          browser: auto
-          skip-tag: true
-          shallow-clone: true
-          url: https://github.com/rakshithakamath94/nfs-ci-jobs.git
-          basedir: "$WORKSPACE/nfs-ci-jobs"
+    - ci-tests
 
     builders:
     - shell: python $WORKSPACE/nfs-ci-jobs/scripts/build-libntirpc.py 
 
     wrappers:
-      - workspace-cleanup:
-          include: ''
+    - cleanup-ws

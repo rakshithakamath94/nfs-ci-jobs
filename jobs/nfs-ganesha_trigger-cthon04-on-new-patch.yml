@@ -8,8 +8,7 @@
     disabled: true
 
     properties:
-    - github:
-        url: https://github.com/nfs-ganesha/nfs-ganesha/ 
+    - nfs-github
     - rebuild:
         rebuild-disabled: true
 
@@ -31,18 +30,5 @@
           curl https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/add-gerrit-comment.sh | bash 
 
     triggers:
-      - gerrit:
-          server-name: nfs-ganesha-gerrithub 
-          silent: true
-          trigger-on:
-            - patchset-created-event:
-                exclude-drafts: true
-                exclude-no-code-change: true
-            - comment-added-contains-event: 
-                comment-contains-value: 'recheck cthon04'
-          projects:
-            - project-compare-type: PLAIN
-              project-pattern: 'ffilz/nfs-ganesha'
-              branches:
-                - branch-pattern: '**' 
-                  branch-compare-type: ANT
+    - gerrithub-trigger:
+        option: 'cthon04'
