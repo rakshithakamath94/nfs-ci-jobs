@@ -1,0 +1,32 @@
+- job:
+    name: nfs_ganesha_posix_compliance 
+    node: cico-workspace
+    description: "Run posix compliance testsuite (NFSv4.0) against the latest build of Ganesha with FSAL_GLUSTER.\n\nposix compliance test suite cloned from, https://github.com/ffilz/ntfs-3g-pjd-fstest.git"
+    project-type: freestyle
+    concurrent: true
+    allow-manual-triggers: true
+    disabled: true
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+        num-to-keep: 7
+    - nfs-github
+
+    parameters:
+    - script_variables:
+        script_url: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster.sh'
+    - nfs_variables:
+        export_var: 'posix_comp'
+    - gerrit_variables
+    - centos_variables 
+
+    triggers:
+    - gerrithub-trigger:
+        option: 'nfs_ganesha_posix_compliance'
+
+    builders:
+    - shell: !include-raw-escape: ../scripts/posix_compliance.sh
+
+    wrappers:
+    - cleanup-ws
