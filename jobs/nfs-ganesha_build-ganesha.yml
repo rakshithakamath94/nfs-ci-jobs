@@ -1,29 +1,38 @@
 - job:
     name: nfs-ganesha_build-ganesha 
     node: cico-workspace
-    description: 'Run dbench test suite against the latest build of Ganesha with FSAL_GLUSTER.'
+    description: 'Build RPMs for NFS-Ganesha.'
     project-type: freestyle
     concurrent: true
     allow-manual-triggers: true
     disabled: true
 
     properties:
-    - discarder
+    - build-discarder:
+        days-to-keep: 7
+        num-to-keep: 7
+    - nfs-github
 
     parameters:
-    - script_variables:
-        script_url: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster-duffy.py'
-    - nfs_variables:
-        export_var: 'dbench'
-    - gerrit_variables
+    - string:
+        default: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/nightly-builds/nfs-ganesha/jenkins-job.py' 
+        description: 'Python script that reserves a machine from Duffy and starts the ${TEST_SCRIPT}.'
+        name: DUFFY_SCRIPT 
+    - string:
+        default: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/nightly-builds/nfs-ganesha/build.sh'
+        description: 'Test script to execute on the reserved machine.'
+        name: TEST_SCRIPT
+    - string:
+        default: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/nightly-builds/nfs-ganesha/' 
+        description: 'URL pointing to the directory with the templates for when building the source RPM and .repo file.'
+        name: TEMPLATES_URL
     - centos_variables
 
-    triggers:
-    - gerrithub-trigger:
-        option: 'dbench'
 
     builders:
-    - shell: !include-raw-escape: ../scripts/ganesha_dbench.sh
+    - shell: |
+        curl -o jenkins-job.py ${DUFFY_SCRIPT}
+        python jenkins-job.py
 
     wrappers:
     - cleanup-ws
