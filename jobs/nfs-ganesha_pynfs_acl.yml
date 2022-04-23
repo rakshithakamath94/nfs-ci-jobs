@@ -23,7 +23,7 @@
         name: TEST_PARAMETERS 
 
     builders:
-    - shell: !include-raw-escape: ../scripts/ganesha_pynfs.sh
+    - shell: !include-raw-escape: ../scripts/common.sh
 
     wrappers:
     - cleanup-ws

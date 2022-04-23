@@ -1,0 +1,33 @@
+- job:
+    name: Small-File 
+    node: cico-workspace
+    description: 'Start Small_File test when a new patch is posted to GerritHub.'
+    project-type: freestyle
+    concurrent: flase
+    allow-manual-triggers: false
+    disabled: true
+
+    scm:
+    - ci-tests
+
+    properties:
+    - nfs-github 
+
+    parameters:
+    - script_variables:
+        script_url: 'https://raw.githubusercontent.com/nfs-ganesha/ci-tests/centos-ci/common-scripts/basic-gluster-duffy.py'
+    - nfs_variables:
+        export_var: 'small-file'
+    - gerrit_variables
+    - centos_variables
+
+    triggers:
+    - gerrithub-trigger
+
+    builders:
+    - shell: |
+        curl -o jenkins-job.py ${DUFFY_SCRIPT}
+        python jenkins-job.py 
+
+    wrappers:
+    - cleanup-ws

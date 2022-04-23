@@ -32,7 +32,7 @@
         export_var: 'ganeshaExport'
 
     builders:
-    - shell: !include-raw-escape: ../scripts/iozone.sh 
+    - shell: !include-raw-escape: ../scripts/common.sh 
 
     triggers:
     - gerrithub-trigger:

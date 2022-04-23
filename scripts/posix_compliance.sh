@@ -3,7 +3,7 @@ export CENTOS_ARCH=x86_64
 export GERRIT_HOST=${GERRIT_HOST}
 export GERRIT_PROJECT=${GERRIT_PROJECT}
 export GERRIT_REFSPEC=${GERRIT_REFSPEC}
-export LAST_TRIGGERED_JOB_NAME=nfs_ganesha_posix_compliance
+export LAST_TRIGGERED_JOB_NAME=$JOB_NAME
 export BUILD_NUMBER=${BUILD_NUMBER}
 
 curl -o jenkins-job.py ${DUFFY_SCRIPT}

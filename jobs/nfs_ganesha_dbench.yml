@@ -21,7 +21,7 @@
         option: 'dbench'
 
     builders:
-    - shell: !include-raw-escape: ../scripts/ganesha_dbench.sh
+    - shell: !include-raw-escape: ../scripts/common.sh
 
     wrappers:
     - cleanup-ws
