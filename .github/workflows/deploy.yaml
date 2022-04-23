@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: build JJB container image
-        run: docker build -t gluster-centosci -f tests/Containerfile .
+        run: docker build -t rakshithakamath94-nfs-ci-jobs -f tests/Containerfile .
       - name: update Jenkins Jobs
-        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-nfs-ganesha-ci.sh gluster-centosci:latest
+        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-nfs-ganesha-ci.sh rakshithakamath94-nfs-ci-jobs:latest
