@@ -1,0 +1,20 @@
+- job:
+    name: test-rakshitha 
+    node: cico-workspace
+    description: 'Start labelled_nfs test when a new patch is posted to GerritHub.'
+    project-type: freestyle
+    concurrent: false 
+    allow-manual-triggers: false
+
+    parameters:
+    - string:
+        default: 'raksh'
+        description: 'Test name'
+        name: Name 
+
+    builders:
+    - shell: |
+        echo "I am test"
+
+    wrappers:
+    - cleanup-ws

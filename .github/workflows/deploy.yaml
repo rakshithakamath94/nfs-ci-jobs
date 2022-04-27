@@ -3,7 +3,7 @@ name: Deploy Jenkins jobs
 on:
   push:
     branches:
-      - main
+      - ci-tests
 jobs:
   push:
     name: Deploy Jenkins jobs
@@ -11,7 +11,9 @@ jobs:
     if: github.repository == 'rakshithakamath94/nfs-ci-jobs'
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: 'ci-tests'
       - name: build JJB container image
-        run: docker build -t rakshithakamath94-nfs-ci-jobs -f tests/Containerfile .
+        run: docker build -t nfs-ganesha-ci-tests -f tests/Containerfile .
       - name: update Jenkins Jobs
-        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-nfs-ganesha-ci.sh rakshithakamath94-nfs-ci-jobs:latest
+        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-nfs-ganesha-ci.sh nfs-ganesha-ci-tests:latest
